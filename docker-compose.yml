@@ -1,0 +1,158 @@
+services:
+  # -------------------------------------------------------------
+  # 1. MySQL 8 Database
+  # -------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: wfh_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wfh_root_pass
+      MYSQL_USER: wfh_user
+      MYSQL_PASSWORD: wfh_secret_pass
+      MYSQL_DATABASE: wfh_employee
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pwfh_root_pass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - wfh_net
+
+  # -------------------------------------------------------------
+  # 2. Employee Microservice (TCP :4002)
+  # -------------------------------------------------------------
+  employee-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wfh_employee_service
+    restart: unless-stopped
+    command: ["node", "dist/apps/employee-service/main.js"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      EMPLOYEE_TCP_PORT: 4002
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: wfh_user
+      DB_PASSWORD: wfh_secret_pass
+      DB_NAME: wfh_employee
+    networks:
+      - wfh_net
+
+  # -------------------------------------------------------------
+  # 3. Auth Microservice (TCP :4001)
+  # -------------------------------------------------------------
+  auth-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wfh_auth_service
+    restart: unless-stopped
+    command: ["node", "dist/apps/auth-service/main.js"]
+    depends_on:
+      - employee-service
+    environment:
+      NODE_ENV: production
+      AUTH_TCP_PORT: 4001
+      EMPLOYEE_TCP_HOST: employee-service
+      EMPLOYEE_TCP_PORT: 4002
+      JWT_SECRET: wfh-production-super-secret-jwt-key-2026-min-32-chars
+      JWT_EXPIRATION: 86400
+    networks:
+      - wfh_net
+
+  # -------------------------------------------------------------
+  # 4. Attendance Microservice (TCP :4003)
+  # -------------------------------------------------------------
+  attendance-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wfh_attendance_service
+    restart: unless-stopped
+    command: ["node", "dist/apps/attendance-service/main.js"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      ATTENDANCE_TCP_PORT: 4003
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: wfh_user
+      DB_PASSWORD: wfh_secret_pass
+      DB_NAME: wfh_attendance
+      STORAGE_UPLOAD_DIR: /app/uploads
+    volumes:
+      - attendance_uploads:/app/uploads
+    networks:
+      - wfh_net
+
+  # -------------------------------------------------------------
+  # 5. API Gateway (HTTP :3000)
+  # -------------------------------------------------------------
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wfh_api_gateway
+    restart: unless-stopped
+    command: ["node", "dist/apps/api-gateway/main.js"]
+    depends_on:
+      - auth-service
+      - employee-service
+      - attendance-service
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      HTTP_PORT: 3000
+      AUTH_TCP_HOST: auth-service
+      AUTH_TCP_PORT: 4001
+      EMPLOYEE_TCP_HOST: employee-service
+      EMPLOYEE_TCP_PORT: 4002
+      ATTENDANCE_TCP_HOST: attendance-service
+      ATTENDANCE_TCP_PORT: 4003
+      JWT_SECRET: wfh-production-super-secret-jwt-key-2026-min-32-chars
+      FRONTEND_URL: http://localhost:5173
+      STORAGE_UPLOAD_DIR: /app/uploads
+    volumes:
+      - attendance_uploads:/app/uploads
+    networks:
+      - wfh_net
+
+  # -------------------------------------------------------------
+  # 6. Frontend Web (React 19 + Nginx :80 & :5173)
+  # -------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: wfh_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "5173:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - wfh_net
+
+volumes:
+  mysql_data:
+    driver: local
+  attendance_uploads:
+    driver: local
+
+networks:
+  wfh_net:
+    driver: bridge
