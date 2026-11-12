@@ -56,7 +56,7 @@ jobs:
       - name: Build Backend Microservices
         run: |
           cd backend
-          npm run build api-gateway
+          npm run build backend
           npm run build auth-service
           npm run build employee-service
           npm run build attendance-service

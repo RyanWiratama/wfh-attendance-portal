@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -6,11 +6,59 @@ import { Employee } from './entities/employee.entity';
 import { Role, PaginatedResultDto } from '@app/common';
 
 @Injectable()
-export class EmployeeService {
+export class EmployeeService implements OnModuleInit {
   constructor(
     @InjectRepository(Employee)
     private readonly employeeRepo: Repository<Employee>,
   ) {}
+
+  async onModuleInit() {
+    await this.ensureSeedData();
+  }
+
+  private async ensureSeedData() {
+    try {
+      const admin = await this.employeeRepo.findOne({
+        where: { email: 'admin@company.com' },
+      });
+      if (!admin) {
+        const adminPassHash = await bcrypt.hash('AdminWFH#2026', 12);
+        await this.employeeRepo.save(
+          this.employeeRepo.create({
+            employeeCode: 'EMP-0001',
+            fullName: 'HR Administrator',
+            email: 'admin@company.com',
+            passwordHash: adminPassHash,
+            role: Role.ADMIN,
+            department: 'Human Resources',
+            position: 'HR Manager',
+            isDeleted: false,
+          }),
+        );
+      }
+
+      const budi = await this.employeeRepo.findOne({
+        where: { email: 'budi@company.com' },
+      });
+      if (!budi) {
+        const budiPassHash = await bcrypt.hash('BudiWFH#2026', 12);
+        await this.employeeRepo.save(
+          this.employeeRepo.create({
+            employeeCode: 'EMP-0002',
+            fullName: 'Budi Santoso',
+            email: 'budi@company.com',
+            passwordHash: budiPassHash,
+            role: Role.EMPLOYEE,
+            department: 'Engineering',
+            position: 'Software Engineer',
+            isDeleted: false,
+          }),
+        );
+      }
+    } catch (err) {
+      // Ignore during initial table creation or sync
+    }
+  }
 
   async create(data: {
     fullName: string;

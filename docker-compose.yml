@@ -106,7 +106,7 @@ services:
       dockerfile: Dockerfile
     container_name: wfh_api_gateway
     restart: unless-stopped
-    command: ["node", "dist/apps/api-gateway/main.js"]
+    command: ["node", "dist/apps/backend/main.js"]
     depends_on:
       - auth-service
       - employee-service
