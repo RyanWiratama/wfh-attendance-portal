@@ -8,7 +8,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { AttendanceStatus } from '@app/common';
-import { AttendanceLog } from './attendance-log.entity';
 
 @Entity('attendances')
 @Index(['employeeId', 'workDate'], { unique: true })
@@ -53,8 +52,8 @@ export class Attendance {
   })
   status: AttendanceStatus;
 
-  @OneToMany(() => AttendanceLog, (log) => log.attendance, { cascade: true })
-  logs: AttendanceLog[];
+  @OneToMany('AttendanceLog', 'attendance', { cascade: true })
+  logs: any[];
 
   @CreateDateColumn()
   createdAt: Date;

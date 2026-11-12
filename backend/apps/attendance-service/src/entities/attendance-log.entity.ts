@@ -7,7 +7,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { AttendanceType } from '@app/common';
-import { Attendance } from './attendance.entity';
 
 @Entity('attendance_logs')
 export class AttendanceLog {
@@ -32,9 +31,9 @@ export class AttendanceLog {
   @Column({ type: 'text', nullable: true })
   notes?: string;
 
-  @ManyToOne(() => Attendance, (att) => att.logs, { onDelete: 'CASCADE' })
+  @ManyToOne('Attendance', 'logs', { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'attendanceId' })
-  attendance: Attendance;
+  attendance?: any;
 
   @CreateDateColumn()
   createdAt: Date;

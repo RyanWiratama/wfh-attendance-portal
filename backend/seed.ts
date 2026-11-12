@@ -1,7 +1,52 @@
-import { DataSource } from 'typeorm';
+import { DataSource, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-import { Employee } from './apps/employee-service/src/entities/employee.entity';
-import { Role } from './libs/common/src/enums/role.enum';
+
+export enum Role {
+  EMPLOYEE = 'EMPLOYEE',
+  ADMIN = 'ADMIN',
+}
+
+@Entity('employees')
+export class Employee {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Index({ unique: true })
+  @Column({ length: 20 })
+  employeeCode: string;
+
+  @Column({ length: 100 })
+  fullName: string;
+
+  @Index({ unique: true })
+  @Column({ length: 150 })
+  email: string;
+
+  @Column({ length: 255 })
+  passwordHash: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.EMPLOYEE,
+  })
+  role: Role;
+
+  @Column({ length: 100, nullable: true })
+  department?: string;
+
+  @Column({ length: 100, nullable: true })
+  position?: string;
+
+  @Column({ default: false })
+  isDeleted: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
 
 async function seed() {
   const dataSource = new DataSource({
@@ -20,13 +65,13 @@ async function seed() {
 
   const employeeRepo = dataSource.getRepository(Employee);
 
-  // 1. Seed HR Admin
-  const existingAdmin = await employeeRepo.findOne({
+  // 1. Seed / Update HR Admin
+  let admin = await employeeRepo.findOne({
     where: { email: 'admin@company.com' },
   });
-  if (!existingAdmin) {
-    const adminPassHash = await bcrypt.hash('AdminWFH#2026', 12);
-    const admin = employeeRepo.create({
+  const adminPassHash = await bcrypt.hash('AdminWFH#2026', 12);
+  if (!admin) {
+    admin = employeeRepo.create({
       employeeCode: 'EMP-0001',
       fullName: 'HR Administrator',
       email: 'admin@company.com',
@@ -36,42 +81,21 @@ async function seed() {
       position: 'HR Manager',
       isDeleted: false,
     });
-    await employeeRepo.save(admin);
-    console.log('Seeded HR Admin: admin@company.com / AdminWFH#2026 (EMP-0001)');
   } else {
-    console.log('ℹ HR Admin already exists.');
+    admin.passwordHash = adminPassHash;
+    admin.isDeleted = false;
   }
+  await employeeRepo.save(admin);
+  console.log('✔ HR Admin ready: admin@company.com / AdminWFH#2026 (EMP-0001)');
 
-  // 2. Seed Employee - Ryan Wiratama
-  const existingRyan = await employeeRepo.findOne({
-    where: { email: 'ryanwiratama@gmail.com' },
-  });
-  if (!existingRyan) {
-    const ryanPassHash = await bcrypt.hash('RyanWFH#2026', 12);
-    const ryan = employeeRepo.create({
-      employeeCode: 'EMP-0002',
-      fullName: 'Ryan Wiratama',
-      email: 'ryanwiratama@gmail.com',
-      passwordHash: ryanPassHash,
-      role: Role.EMPLOYEE,
-      department: 'Information Technology',
-      position: 'Fullstack Web Developer',
-      isDeleted: false,
-    });
-    await employeeRepo.save(ryan);
-    console.log('Seeded Employee: ryanwiratama@gmail.com / RyanWFH#2026 (EMP-0002)');
-  } else {
-    console.log('ℹ Employee Ryan already exists.');
-  }
-
-  // 3. Seed Employee - Budi Santoso (Demo Account)
-  const existingBudi = await employeeRepo.findOne({
+  // 2. Seed / Update Budi Santoso (Demo Account)
+  let budi = await employeeRepo.findOne({
     where: { email: 'budi@company.com' },
   });
-  if (!existingBudi) {
-    const budiPassHash = await bcrypt.hash('BudiWFH#2026', 12);
-    const budi = employeeRepo.create({
-      employeeCode: 'EMP-0003',
+  const budiPassHash = await bcrypt.hash('BudiWFH#2026', 12);
+  if (!budi) {
+    budi = employeeRepo.create({
+      employeeCode: 'EMP-0002',
       fullName: 'Budi Santoso',
       email: 'budi@company.com',
       passwordHash: budiPassHash,
@@ -80,14 +104,38 @@ async function seed() {
       position: 'Software Engineer',
       isDeleted: false,
     });
-    await employeeRepo.save(budi);
-    console.log('Seeded Employee: budi@company.com / BudiWFH#2026 (EMP-0003)');
   } else {
-    console.log('ℹ Employee Budi already exists.');
+    budi.passwordHash = budiPassHash;
+    budi.isDeleted = false;
   }
+  await employeeRepo.save(budi);
+  console.log('✔ Employee ready: budi@company.com / BudiWFH#2026 (EMP-0002)');
+
+  // 3. Seed / Update Ryan Wiratama
+  let ryan = await employeeRepo.findOne({
+    where: { email: 'ryanwiratama@gmail.com' },
+  });
+  const ryanPassHash = await bcrypt.hash('RyanWFH#2026', 12);
+  if (!ryan) {
+    ryan = employeeRepo.create({
+      employeeCode: 'EMP-0003',
+      fullName: 'Ryan Wiratama',
+      email: 'ryanwiratama@gmail.com',
+      passwordHash: ryanPassHash,
+      role: Role.EMPLOYEE,
+      department: 'Information Technology',
+      position: 'Fullstack Web Developer',
+      isDeleted: false,
+    });
+  } else {
+    ryan.passwordHash = ryanPassHash;
+    ryan.isDeleted = false;
+  }
+  await employeeRepo.save(ryan);
+  console.log('✔ Employee ready: ryanwiratama@gmail.com / RyanWFH#2026 (EMP-0003)');
 
   await dataSource.destroy();
-  console.log('Seeding completed successfully!');
+  console.log('🎉 Seeding completed successfully!');
 }
 
 seed().catch((err) => {

@@ -44,7 +44,7 @@ export const LoginPage: React.FC = () => {
       addToast('Selamat datang kembali di WFH Attendance Portal!', 'success');
       navigate('/attendance');
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Email atau password salah.';
+      const msg = err.response?.data?.message || err.message || 'Email atau password salah.';
       addToast(Array.isArray(msg) ? msg.join(', ') : msg, 'error');
     } finally {
       setIsLoading(false);

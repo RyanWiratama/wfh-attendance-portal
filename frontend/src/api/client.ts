@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const apiClient = axios.create({
-  baseURL: '/api/v1',
+  baseURL: '/api',
   withCredentials: true, // Send and receive httpOnly cookies automatically
   headers: {
     'Content-Type': 'application/json',
