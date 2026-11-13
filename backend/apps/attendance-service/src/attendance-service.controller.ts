@@ -22,6 +22,7 @@ export class AttendanceServiceController {
       originalFilename: string;
       mimeType: string;
       notes?: string;
+      workStartTime?: string;
     },
   ) {
     const buffer = Buffer.from(payload.photoBuffer.data);
@@ -31,6 +32,7 @@ export class AttendanceServiceController {
       payload.originalFilename,
       payload.mimeType,
       payload.notes,
+      payload.workStartTime,
     );
   }
 

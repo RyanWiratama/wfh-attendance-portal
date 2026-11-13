@@ -57,9 +57,34 @@ export class AttendancesController {
   @Get('today')
   @ApiOperation({ summary: 'Status presensi hari ini untuk user yang login' })
   async getTodayStatus(@CurrentUser('userId') userId: number) {
-    return firstValueFrom(
+    const todayStatus = await firstValueFrom(
       this.attendanceClient.send('attendance.today', userId),
     );
+
+    const schedule = {
+      workStartTime: '08:00:00',
+      workEndTime: '17:00:00',
+      lateToleranceMinutes: 15,
+    };
+
+    try {
+      const employee = await firstValueFrom(
+        this.employeeClient.send('employee.find_by_id', userId),
+      );
+      if (employee?.workStartTime) {
+        schedule.workStartTime = employee.workStartTime;
+      }
+      if (employee?.workEndTime) {
+        schedule.workEndTime = employee.workEndTime;
+      }
+    } catch {
+      // fallback
+    }
+
+    return {
+      ...todayStatus,
+      schedule,
+    };
   }
 
   @Post('check-in')
@@ -85,6 +110,18 @@ export class AttendancesController {
       throw new BadRequestException('Foto selfie bukti WFH wajib diunggah.');
     }
 
+    let workStartTime: string | undefined;
+    try {
+      const employee = await firstValueFrom(
+        this.employeeClient.send('employee.find_by_id', userId),
+      );
+      if (employee?.workStartTime) {
+        workStartTime = employee.workStartTime;
+      }
+    } catch {
+      // fallback
+    }
+
     return firstValueFrom(
       this.attendanceClient.send('attendance.check_in', {
         employeeId: userId,
@@ -92,6 +129,7 @@ export class AttendancesController {
         originalFilename: file.originalname,
         mimeType: file.mimetype,
         notes,
+        workStartTime,
       }),
     );
   }

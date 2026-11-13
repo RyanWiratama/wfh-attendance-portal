@@ -17,6 +17,8 @@ export class EmployeeServiceController {
       role?: Role;
       department?: string;
       position?: string;
+      workStartTime?: string;
+      workEndTime?: string;
     },
   ) {
     return this.employeeService.create(data);
@@ -57,6 +59,8 @@ export class EmployeeServiceController {
         role?: Role;
         department?: string;
         position?: string;
+        workStartTime?: string;
+        workEndTime?: string;
       };
     },
   ) {

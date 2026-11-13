@@ -44,4 +44,9 @@ export interface TodayAttendance {
   hasCheckedIn: boolean;
   hasCheckedOut: boolean;
   attendance: AttendanceRecord | null;
+  schedule?: {
+    workStartTime: string;
+    workEndTime: string;
+    lateToleranceMinutes: number;
+  };
 }

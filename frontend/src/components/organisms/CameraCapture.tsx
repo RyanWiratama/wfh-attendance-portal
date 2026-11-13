@@ -137,7 +137,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
   return (
     <div className="w-full flex flex-col items-center">
       {/* Container display */}
-      <div className="relative w-full aspect-4/3 max-w-md bg-slate-900 rounded-2xl overflow-hidden border border-slate-300 shadow-inner flex items-center justify-center">
+      <div className="relative w-full aspect-4/3 max-w-md bg-slate-900 rounded-xl overflow-hidden border border-slate-300 shadow-inner flex items-center justify-center">
         {previewUrl ? (
           // Captured Preview
           <div className="relative w-full h-full">

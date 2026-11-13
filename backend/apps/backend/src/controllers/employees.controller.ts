@@ -62,6 +62,8 @@ export class EmployeesController {
       role?: Role;
       department?: string;
       position?: string;
+      workStartTime?: string;
+      workEndTime?: string;
     },
   ) {
     return firstValueFrom(this.employeeClient.send('employee.create', dto));
@@ -85,6 +87,8 @@ export class EmployeesController {
       role?: Role;
       department?: string;
       position?: string;
+      workStartTime?: string;
+      workEndTime?: string;
     },
   ) {
     return firstValueFrom(

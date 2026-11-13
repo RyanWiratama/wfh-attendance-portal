@@ -5,15 +5,12 @@ import {
   Clock,
   Users,
   BarChart3,
-  Calendar,
   LogOut,
   Building2,
   X,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Role } from '../../types/auth.types';
-import { Badge } from '../atoms/Badge';
-import { Avatar } from '../atoms/Avatar';
 import { cn } from '../../lib/utils';
 
 export interface SidebarProps {
@@ -30,12 +27,12 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    name: 'Absensi WFH',
+    name: 'Presensi WFH',
     to: '/attendance',
     icon: CalendarCheck,
   },
   {
-    name: 'Riwayat Absensi',
+    name: 'Riwayat Presensi',
     to: '/my-history',
     icon: Clock,
   },
@@ -49,12 +46,6 @@ const navItems: NavItem[] = [
     name: 'Monitoring Absensi',
     to: '/monitoring',
     icon: BarChart3,
-    adminOnly: true,
-  },
-  {
-    name: 'Jadwal Kerja',
-    to: '/schedules',
-    icon: Calendar,
     adminOnly: true,
   },
 ];
@@ -71,33 +62,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
 
   return (
     <>
-      {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
           onClick={onClose}
         />
       )}
 
-      {/* Sidebar Panel */}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 left-0 z-40 w-64 bg-slate-900 text-white flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto border-r border-slate-800 shadow-xl lg:shadow-none',
+          'fixed top-0 bottom-0 left-0 z-40 w-60 bg-white text-slate-800 flex flex-col transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-auto border-r border-slate-200',
           isOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
         {/* Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center text-white shadow-md shadow-primary-500/20">
-              <Building2 className="w-5 h-5" />
+        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-200">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+              <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-bold text-base tracking-tight text-white block">
-                WFH PORTAL
+              <span className="font-bold text-sm text-slate-900 block leading-tight">
+                WFH Portal
               </span>
-              <span className="text-[10px] tracking-wider uppercase text-slate-400 block -mt-0.5">
-                Attendance System
+              <span className="text-[10px] text-slate-500 block leading-tight">
+                Presensi & Monitoring
               </span>
             </div>
           </div>
@@ -105,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
           {onClose && (
             <button
               onClick={onClose}
-              className="lg:hidden text-slate-400 hover:text-white p-1 rounded-md"
+              className="lg:hidden text-slate-400 hover:text-slate-600 p-1 rounded-md"
               aria-label="Tutup Menu"
             >
               <X className="w-5 h-5" />
@@ -114,9 +103,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
         </div>
 
         {/* Navigation Links */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-1.5">
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           <div className="px-3 mb-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
-            Menu Utama
+            Menu
           </div>
           {filteredItems.map((item) => {
             const Icon = item.icon;
@@ -127,14 +116,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                 onClick={onClose}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group',
+                    'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/30 font-semibold'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white',
+                      ? 'bg-blue-50 text-blue-700 font-semibold'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
                   )
                 }
               >
-                <Icon className="w-5 h-5 shrink-0 opacity-80 group-hover:opacity-100" />
+                <Icon className="w-4 h-4 shrink-0" />
                 <span>{item.name}</span>
               </NavLink>
             );
@@ -143,26 +132,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
 
         {/* User Profile & Logout Footer */}
         {user && (
-          <div className="p-4 border-t border-slate-800 bg-slate-950/40">
-            <div className="flex items-center gap-3 mb-3">
-              <Avatar name={user.fullName} size="md" />
+          <div className="p-3 border-t border-slate-200 bg-slate-50">
+            <div className="flex items-center gap-2.5 mb-2.5">
+              <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold text-xs flex items-center justify-center shrink-0">
+                {user.fullName.charAt(0).toUpperCase()}
+              </div>
               <div className="overflow-hidden flex-1">
-                <p className="text-sm font-medium text-white truncate">{user.fullName}</p>
-                <p className="text-xs text-slate-400 truncate">{user.employeeCode}</p>
-                <div className="mt-1">
-                  <Badge variant={user.role === Role.ADMIN ? 'blue' : 'slate'}>
+                <p className="text-xs font-semibold text-slate-900 truncate">{user.fullName}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[10px] text-slate-500">{user.employeeCode}</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded font-medium bg-slate-200 text-slate-700">
                     {user.role === Role.ADMIN ? 'HR Admin' : 'Karyawan'}
-                  </Badge>
+                  </span>
                 </div>
               </div>
             </div>
 
             <button
               onClick={() => logout()}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors border border-rose-500/20"
+              className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-colors border border-slate-200 hover:border-rose-200 cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Keluar Sistem</span>
+              <span>Keluar</span>
             </button>
           </div>
         )}

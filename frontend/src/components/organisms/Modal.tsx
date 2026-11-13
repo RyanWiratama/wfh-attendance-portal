@@ -72,7 +72,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full rounded-2xl bg-white shadow-2xl border border-slate-200 transition-all z-10 flex flex-col max-h-[90vh]',
+          'relative w-full rounded-xl bg-white shadow-lg border border-slate-200 transition-all z-10 flex flex-col max-h-[90vh]',
           sizeClasses[size],
         )}
       >

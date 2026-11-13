@@ -182,13 +182,13 @@ export const AttendanceMonitoringPage: React.FC = () => {
         </div>
 
         {/* Filter Controls */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-800 pb-2 border-b border-slate-100">
-            <Filter className="w-4 h-4 text-blue-600" />
-            <span>Filter Data Presensi</span>
+        <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 pb-2 border-b border-slate-100 uppercase tracking-wider">
+            <Filter className="w-3.5 h-3.5 text-blue-600" />
+            <span>Filter Presensi</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1">
                 Dari Tanggal

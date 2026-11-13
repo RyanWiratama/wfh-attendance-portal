@@ -22,18 +22,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const variants = {
-      primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm focus:ring-blue-500',
+      primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs focus:ring-blue-500',
       secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 focus:ring-slate-400',
-      danger: 'bg-red-600 hover:bg-red-700 text-white shadow-sm focus:ring-red-500',
-      warning: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm focus:ring-amber-500',
-      outline: 'border border-slate-300 hover:bg-slate-50 text-slate-700 focus:ring-blue-500',
+      danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs focus:ring-rose-500',
+      warning: 'bg-amber-600 hover:bg-amber-700 text-white shadow-xs focus:ring-amber-500',
+      outline: 'border border-slate-300 hover:bg-slate-50 text-slate-700 focus:ring-blue-500 bg-white',
       ghost: 'hover:bg-slate-100 text-slate-700 focus:ring-slate-400',
     };
 
     const sizes = {
       sm: 'px-3 py-1.5 text-xs rounded-lg gap-1.5',
-      md: 'px-4 py-2 text-sm rounded-xl gap-2',
-      lg: 'px-5 py-2.5 text-base rounded-xl gap-2.5',
+      md: 'px-4 py-2 text-sm rounded-lg gap-2',
+      lg: 'px-5 py-2.5 text-sm rounded-lg gap-2',
     };
 
     return (
@@ -41,7 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer',
+          'inline-flex items-center justify-center font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer',
           variants[variant],
           sizes[size],
           className,

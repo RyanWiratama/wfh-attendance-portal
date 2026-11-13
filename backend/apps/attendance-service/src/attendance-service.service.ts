@@ -60,12 +60,16 @@ export class AttendanceService implements OnModuleInit {
     originalFilename: string,
     mimeType: string,
     notes?: string,
+    customWorkStartTime?: string,
   ): Promise<Attendance> {
     const today = JakartaClock.todayDateString();
     const now = JakartaClock.now().toDate();
 
     const schedule = await this.getDefaultSchedule();
-    const lateness = evaluateCheckInLateness(now, today, schedule);
+    const activeSchedule = customWorkStartTime
+      ? { ...schedule, workStartTime: customWorkStartTime }
+      : schedule;
+    const lateness = evaluateCheckInLateness(now, today, activeSchedule as WorkSchedule);
 
     // Save photo first
     const photoPath = await this.storageService.saveFile(

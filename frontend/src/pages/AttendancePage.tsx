@@ -6,6 +6,8 @@ import {
   Eye,
   Camera,
   ArrowRight,
+  Clock,
+  Info,
 } from 'lucide-react';
 import dayjs from 'dayjs';
 import { DashboardTemplate } from '../components/templates/DashboardTemplate';
@@ -41,10 +43,27 @@ export const AttendancePage: React.FC = () => {
   const hasCheckedOut = todayData?.hasCheckedOut ?? false;
   const attendance = todayData?.attendance;
 
-  const currentHour = dayjs().hour();
-  const currentMinute = dayjs().minute();
-  const isPastLateTolerance =
-    currentHour > 8 || (currentHour === 8 && currentMinute > 15);
+  const schedule = todayData?.schedule;
+  const workStartTime = schedule?.workStartTime ? schedule.workStartTime.substring(0, 5) : '08:00';
+  const workEndTime = schedule?.workEndTime ? schedule.workEndTime.substring(0, 5) : '17:00';
+  const lateToleranceMinutes = schedule?.lateToleranceMinutes ?? 15;
+
+  const [startHour, startMinute] = workStartTime.split(':').map(Number);
+  const scheduledStartDayjs = dayjs()
+    .hour(isNaN(startHour) ? 8 : startHour)
+    .minute(isNaN(startMinute) ? 0 : startMinute)
+    .second(0);
+  const lateThresholdDayjs = scheduledStartDayjs.add(lateToleranceMinutes, 'minute');
+  const lateThresholdTimeStr = lateThresholdDayjs.format('HH:mm');
+
+  const now = dayjs();
+  const isPastLateTolerance = now.isAfter(lateThresholdDayjs);
+  const [endHour, endMinute] = workEndTime.split(':').map(Number);
+  const scheduledEndDayjs = dayjs()
+    .hour(isNaN(endHour) ? 17 : endHour)
+    .minute(isNaN(endMinute) ? 0 : endMinute)
+    .second(0);
+  const isBeforeWorkEndTime = now.isBefore(scheduledEndDayjs);
 
   const isSubmitting = checkInMutation.isPending || checkOutMutation.isPending;
 
@@ -168,6 +187,44 @@ export const AttendancePage: React.FC = () => {
           </div>
         </div>
 
+        {/* Schedule & Attendance Window Information Banner */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-3 text-slate-800">
+            <Clock className="w-4 h-4 text-blue-600" />
+            <h3 className="font-semibold text-sm">Ketentuan & Batas Waktu Absensi WFH</h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div className="p-3.5 rounded-lg bg-blue-50/70 border border-blue-100 flex flex-col justify-between">
+              <div>
+                <span className="font-semibold text-blue-900 block mb-1">
+                  Batas Absen Masuk (Check-In)
+                </span>
+                <p className="text-slate-700">
+                  Pukul <strong className="font-mono text-slate-900">{workStartTime} - {lateThresholdTimeStr} WIB</strong>
+                </p>
+              </div>
+              <p className="text-[11px] text-blue-800/80 mt-2 leading-relaxed">
+                *Toleransi keterlambatan {lateToleranceMinutes} menit. Check-in melewati pukul {lateThresholdTimeStr} WIB otomatis tercatat sebagai <strong>Terlambat</strong>.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 flex flex-col justify-between">
+              <div>
+                <span className="font-semibold text-slate-800 block mb-1">
+                  Batas Absen Keluar (Check-Out)
+                </span>
+                <p className="text-slate-700">
+                  Mulai pukul <strong className="font-mono text-slate-900">{workEndTime} WIB</strong>
+                </p>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                *Wajib melakukan Check-Out setelah jam kerja Anda selesai dengan mengunggah foto selfie.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Attendance Action Box */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 sm:p-6">
           {hasCheckedIn && hasCheckedOut ? (
@@ -187,13 +244,26 @@ export const AttendancePage: React.FC = () => {
                     {!hasCheckedIn ? 'Ambil Foto Check-In (Pagi)' : 'Ambil Foto Check-Out (Sore)'}
                   </span>
                 </h3>
-                <span className="text-xs text-slate-400">Jam Kerja: 08:00 - 17:00 WIB</span>
+                <span className="text-xs text-slate-500 font-mono">
+                  Jam Kerja: {workStartTime} - {workEndTime} WIB
+                </span>
               </div>
 
               {!hasCheckedIn && isPastLateTolerance && (
                 <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>Waktu saat ini telah melewati pukul 08:15 WIB (Terlambat).</span>
+                  <span>
+                    Waktu saat ini telah melewati batas toleransi ({lateThresholdTimeStr} WIB). Check-in akan tercatat sebagai <strong>Terlambat</strong>.
+                  </span>
+                </div>
+              )}
+
+              {hasCheckedIn && !hasCheckedOut && isBeforeWorkEndTime && (
+                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800 flex items-center gap-2">
+                  <Info className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span>
+                    Jam kerja Anda berakhir pada pukul <strong>{workEndTime} WIB</strong>. Anda dapat melakukan Check-Out saat selesai bekerja.
+                  </span>
                 </div>
               )}
 

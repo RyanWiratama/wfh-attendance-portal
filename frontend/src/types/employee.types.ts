@@ -8,6 +8,8 @@ export interface Employee {
   role: Role;
   position?: string;
   department?: string;
+  workStartTime?: string;
+  workEndTime?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -20,6 +22,8 @@ export interface CreateEmployeeInput {
   role: Role;
   position?: string;
   department?: string;
+  workStartTime?: string;
+  workEndTime?: string;
 }
 
 export interface UpdateEmployeeInput {
@@ -29,6 +33,8 @@ export interface UpdateEmployeeInput {
   role?: Role;
   position?: string;
   department?: string;
+  workStartTime?: string;
+  workEndTime?: string;
 }
 
 export interface PaginatedResult<T> {

@@ -66,7 +66,7 @@ export const WorkSchedulePage: React.FC = () => {
     >
       <div className="max-w-4xl space-y-6">
         {/* Info Banner */}
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3 text-blue-800 text-sm">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3 text-blue-800 text-sm">
           <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
           <div className="leading-relaxed">
             <strong>Kebijakan Kerja WFH:</strong> Jam kerja WFH normal adalah pukul <strong>08:00 s/d 17:00 WIB</strong> dengan batas toleransi kehadiran <strong>15 menit</strong> (maksimal check-in pukul 08:15:00 WIB). Karyawan yang melakukan check-in melewati batas ini otomatis tercatat sebagai <strong>Terlambat</strong>.
@@ -74,7 +74,7 @@ export const WorkSchedulePage: React.FC = () => {
         </div>
 
         {/* Schedule List */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs divide-y divide-slate-100">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-xs divide-y divide-slate-100">
           {isLoading ? (
             <div className="p-8 text-center text-slate-400">Memuat konfigurasi jadwal kerja...</div>
           ) : !schedules || schedules.length === 0 ? (

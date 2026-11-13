@@ -40,6 +40,12 @@ export class Employee {
   @Column({ length: 100, nullable: true })
   position?: string;
 
+  @Column({ type: 'time', default: '08:00:00' })
+  workStartTime: string;
+
+  @Column({ type: 'time', default: '17:00:00' })
+  workEndTime: string;
+
   @Column({ default: false })
   isDeleted: boolean;
 

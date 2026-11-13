@@ -34,6 +34,8 @@ const employeeSchema = z.object({
   role: z.nativeEnum(Role),
   position: z.string().optional(),
   department: z.string().optional(),
+  workStartTime: z.string().optional(),
+  workEndTime: z.string().optional(),
 });
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>;
@@ -54,6 +56,11 @@ export const EmployeesPage: React.FC = () => {
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
+  const formatTimeForDb = (t?: string, defaultVal = '08:00:00') => {
+    if (!t) return defaultVal;
+    return t.length === 5 ? `${t}:00` : t;
+  };
+
   const {
     register,
     handleSubmit,
@@ -68,6 +75,8 @@ export const EmployeesPage: React.FC = () => {
       role: Role.EMPLOYEE,
       position: '',
       department: '',
+      workStartTime: '08:00',
+      workEndTime: '17:00',
     },
   });
 
@@ -79,6 +88,8 @@ export const EmployeesPage: React.FC = () => {
       role: Role.EMPLOYEE,
       position: '',
       department: '',
+      workStartTime: '08:00',
+      workEndTime: '17:00',
     });
     setIsAddOpen(true);
   };
@@ -92,6 +103,8 @@ export const EmployeesPage: React.FC = () => {
       role: emp.role,
       position: emp.position || '',
       department: emp.department || '',
+      workStartTime: emp.workStartTime ? emp.workStartTime.substring(0, 5) : '08:00',
+      workEndTime: emp.workEndTime ? emp.workEndTime.substring(0, 5) : '17:00',
     });
   };
 
@@ -103,6 +116,8 @@ export const EmployeesPage: React.FC = () => {
       role: values.role,
       position: values.position || undefined,
       department: values.department || undefined,
+      workStartTime: formatTimeForDb(values.workStartTime, '08:00:00'),
+      workEndTime: formatTimeForDb(values.workEndTime, '17:00:00'),
     });
     setIsAddOpen(false);
   };
@@ -118,6 +133,8 @@ export const EmployeesPage: React.FC = () => {
         role: values.role,
         position: values.position || undefined,
         department: values.department || undefined,
+        workStartTime: formatTimeForDb(values.workStartTime, '08:00:00'),
+        workEndTime: formatTimeForDb(values.workEndTime, '17:00:00'),
       },
     });
     setEditingEmployee(null);
@@ -162,6 +179,15 @@ export const EmployeesPage: React.FC = () => {
             {row.position || '-'}
           </span>
         </div>
+      ),
+    },
+    {
+      key: 'workSchedule',
+      header: 'Jam Kerja',
+      render: (row) => (
+        <span className="font-mono text-xs text-slate-700 bg-slate-50 px-2 py-1 rounded-md border border-slate-200 inline-block whitespace-nowrap">
+          {row.workStartTime?.substring(0, 5) || '08:00'} - {row.workEndTime?.substring(0, 5) || '17:00'} WIB
+        </span>
       ),
     },
     {
@@ -215,9 +241,9 @@ export const EmployeesPage: React.FC = () => {
     >
       <div className="space-y-4">
         {/* Search bar */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-3">
+        <div className="bg-white p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center gap-2.5">
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
             <Input
               type="text"
               placeholder="Cari berdasarkan nama, kode karyawan, atau email..."
@@ -321,6 +347,26 @@ export const EmployeesPage: React.FC = () => {
             </FormField>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              label="Jam Masuk Kerja"
+              error={errors.workStartTime?.message}
+              hint="Format 24 jam (standar: 08:00)"
+              required
+            >
+              <Input type="time" {...register('workStartTime')} />
+            </FormField>
+
+            <FormField
+              label="Jam Absen Keluar"
+              error={errors.workEndTime?.message}
+              hint="Format 24 jam (standar: 17:00)"
+              required
+            >
+              <Input type="time" {...register('workEndTime')} />
+            </FormField>
+          </div>
+
           <FormField label="Hak Akses (Role)" error={errors.role?.message} required>
             <Select {...register('role')}>
               <option value={Role.EMPLOYEE}>Karyawan (Absensi WFH)</option>
@@ -384,6 +430,26 @@ export const EmployeesPage: React.FC = () => {
 
             <FormField label="Jabatan / Posisi" error={errors.position?.message}>
               <Input {...register('position')} />
+            </FormField>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              label="Jam Masuk Kerja"
+              error={errors.workStartTime?.message}
+              hint="Format 24 jam (standar: 08:00)"
+              required
+            >
+              <Input type="time" {...register('workStartTime')} />
+            </FormField>
+
+            <FormField
+              label="Jam Absen Keluar"
+              error={errors.workEndTime?.message}
+              hint="Format 24 jam (standar: 17:00)"
+              required
+            >
+              <Input type="time" {...register('workEndTime')} />
             </FormField>
           </div>
 

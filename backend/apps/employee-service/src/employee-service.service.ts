@@ -32,9 +32,15 @@ export class EmployeeService implements OnModuleInit {
             role: Role.ADMIN,
             department: 'Human Resources',
             position: 'HR Manager',
+            workStartTime: '08:00:00',
+            workEndTime: '17:00:00',
             isDeleted: false,
           }),
         );
+      } else if (!admin.workStartTime || !admin.workEndTime) {
+        admin.workStartTime = admin.workStartTime || '08:00:00';
+        admin.workEndTime = admin.workEndTime || '17:00:00';
+        await this.employeeRepo.save(admin);
       }
 
       const budi = await this.employeeRepo.findOne({
@@ -51,9 +57,15 @@ export class EmployeeService implements OnModuleInit {
             role: Role.EMPLOYEE,
             department: 'Engineering',
             position: 'Software Engineer',
+            workStartTime: '08:00:00',
+            workEndTime: '17:00:00',
             isDeleted: false,
           }),
         );
+      } else if (!budi.workStartTime || !budi.workEndTime) {
+        budi.workStartTime = budi.workStartTime || '08:00:00';
+        budi.workEndTime = budi.workEndTime || '17:00:00';
+        await this.employeeRepo.save(budi);
       }
     } catch (err) {
       // Ignore during initial table creation or sync
@@ -67,6 +79,8 @@ export class EmployeeService implements OnModuleInit {
     role?: Role;
     department?: string;
     position?: string;
+    workStartTime?: string;
+    workEndTime?: string;
   }): Promise<Omit<Employee, 'passwordHash'>> {
     const existing = await this.employeeRepo.findOne({
       where: { email: data.email.toLowerCase().trim() },
@@ -87,6 +101,8 @@ export class EmployeeService implements OnModuleInit {
       role: data.role || Role.EMPLOYEE,
       department: data.department,
       position: data.position,
+      workStartTime: data.workStartTime || '08:00:00',
+      workEndTime: data.workEndTime || '17:00:00',
       isDeleted: false,
     });
 
@@ -161,6 +177,8 @@ export class EmployeeService implements OnModuleInit {
       role?: Role;
       department?: string;
       position?: string;
+      workStartTime?: string;
+      workEndTime?: string;
     },
   ): Promise<Omit<Employee, 'passwordHash'>> {
     const employee = await this.employeeRepo.findOne({
@@ -184,6 +202,8 @@ export class EmployeeService implements OnModuleInit {
     if (data.department !== undefined) employee.department = data.department;
     if (data.position !== undefined) employee.position = data.position;
     if (data.role) employee.role = data.role;
+    if (data.workStartTime !== undefined) employee.workStartTime = data.workStartTime;
+    if (data.workEndTime !== undefined) employee.workEndTime = data.workEndTime;
     if (data.password) {
       employee.passwordHash = await bcrypt.hash(data.password, 12);
     }

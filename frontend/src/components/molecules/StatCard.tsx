@@ -24,13 +24,13 @@ export const StatCard: React.FC<StatCardProps> = ({
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+    <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center justify-between">
       <div>
-        <p className="text-xs font-medium text-slate-500 mb-1">{title}</p>
-        <h3 className="text-2xl font-bold text-slate-900">{value}</h3>
-        {description && <p className="text-xs text-slate-400 mt-1">{description}</p>}
+        <p className="text-xs font-medium text-slate-500 mb-0.5">{title}</p>
+        <h3 className="text-xl font-bold text-slate-900">{value}</h3>
+        {description && <p className="text-[11px] text-slate-400 mt-0.5">{description}</p>}
       </div>
-      <div className={cn('w-12 h-12 rounded-xl border flex items-center justify-center shrink-0', iconBgs[color])}>
+      <div className={cn('w-10 h-10 rounded-lg border flex items-center justify-center shrink-0', iconBgs[color])}>
         {icon}
       </div>
     </div>
