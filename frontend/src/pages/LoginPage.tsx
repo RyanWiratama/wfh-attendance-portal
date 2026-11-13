@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, Lock, LogIn, Sparkles } from 'lucide-react';
+import { Mail, Lock, LogIn, KeyRound } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { AuthTemplate } from '../components/templates/AuthTemplate';
@@ -41,7 +41,7 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     try {
       await login(data);
-      addToast('Selamat datang kembali di WFH Attendance Portal!', 'success');
+      addToast('Login berhasil', 'success');
       navigate('/attendance');
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || 'Email atau password salah.';
@@ -99,27 +99,26 @@ export const LoginPage: React.FC = () => {
         </Button>
       </form>
 
-      {/* Quick Demo Credentials helper */}
-      <div className="mt-6 pt-5 border-t border-slate-100">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-          <span>Akun Demo Cepat (Klik untuk Mengisi):</span>
+      <div className="mt-5 pt-4 border-t border-slate-100">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600 mb-2">
+          <KeyRound className="w-3.5 h-3.5 text-blue-600" />
+          <span>Akun Demo:</span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <button
             type="button"
             onClick={() => handleQuickFill('admin@company.com', 'AdminWFH#2026')}
-            className="p-2.5 rounded-xl border border-blue-200 bg-blue-50/60 hover:bg-blue-100/70 text-blue-800 text-left transition-colors cursor-pointer"
+            className="p-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 text-left transition-colors cursor-pointer"
           >
-            <span className="font-semibold block">HR Admin</span>
-            <span className="text-[11px] text-blue-600 block truncate">admin@company.com</span>
+            <span className="font-medium block">HR Admin</span>
+            <span className="text-[11px] text-slate-500 block truncate">admin@company.com</span>
           </button>
           <button
             type="button"
             onClick={() => handleQuickFill('budi@company.com', 'BudiWFH#2026')}
-            className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 text-left transition-colors cursor-pointer"
+            className="p-2.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 text-left transition-colors cursor-pointer"
           >
-            <span className="font-semibold block">Karyawan</span>
+            <span className="font-medium block">Karyawan</span>
             <span className="text-[11px] text-slate-500 block truncate">budi@company.com</span>
           </button>
         </div>

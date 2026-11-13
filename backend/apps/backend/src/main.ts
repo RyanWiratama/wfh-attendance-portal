@@ -39,7 +39,7 @@ async function bootstrap() {
 
   // Swagger OpenAPI Documentation
   const config = new DocumentBuilder()
-    .setTitle('Enterprise WFH Attendance & Employee Monitoring API')
+    .setTitle('WFH Attendance & Monitoring API')
     .setDescription(
       'Dokumentasi API Gateway untuk sistem Absensi WFH dan Monitoring Karyawan.',
     )

@@ -1,5 +1,4 @@
 export * from './common.module';
-export * from './common.service';
 export * from './constants/services.constant';
 export * from './enums/role.enum';
 export * from './enums/attendance.enum';

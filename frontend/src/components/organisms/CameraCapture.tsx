@@ -22,7 +22,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
 
-  // Stop video stream helper
   const stopStream = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -31,7 +30,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
     setIsCameraActive(false);
   }, []);
 
-  // Start webcam
   const startCamera = useCallback(async () => {
     stopStream();
     setErrorMessage(null);
@@ -69,7 +67,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
     }
   }, [stopStream]);
 
-  // Start camera on mount if not captured
   useEffect(() => {
     if (!previewUrl && !disabled) {
       startCamera();
@@ -79,7 +76,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
     };
   }, [previewUrl, disabled, startCamera, stopStream]);
 
-  // Take snapshot
   const takeSnapshot = () => {
     if (!videoRef.current || !isCameraActive) return;
 
@@ -91,7 +87,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Flip horizontally for selfie mirror effect
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -112,7 +107,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
     );
   };
 
-  // Handle manual file upload fallback
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -128,7 +122,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
     onCapture(file, url);
   };
 
-  // Retake photo
   const handleRetake = () => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);

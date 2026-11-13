@@ -14,39 +14,29 @@ export const AuthTemplate: React.FC<AuthTemplateProps> = ({
   children,
 }) => {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-primary-950 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
-      {/* Brand Header */}
-      <div className="mb-8 text-center flex flex-col items-center">
-        <div className="w-14 h-14 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-xl shadow-primary-500/30 mb-3 border border-primary-400/30">
-          <Building2 className="w-8 h-8" />
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4">
+      <div className="mb-6 text-center">
+        <div className="inline-flex w-12 h-12 rounded-xl bg-blue-600 items-center justify-center text-white mb-2 shadow-sm">
+          <Building2 className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          WFH PORTAL
-        </h1>
-        <p className="text-xs uppercase tracking-widest text-primary-300 font-medium mt-0.5">
-          Attendance & Monitoring System
-        </p>
+        <h1 className="text-xl font-bold text-slate-800">WFH Portal</h1>
+        <p className="text-xs text-slate-500">Sistem Presensi & Monitoring Karyawan</p>
       </div>
 
-      {/* Main Card */}
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
-        <div className="p-6 sm:p-8">
-          <div className="mb-6 text-center">
-            <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-            {subtitle && (
-              <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
-            )}
+      <div className="w-full max-w-md bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="p-6">
+          <div className="mb-5 text-center">
+            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
+            {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
           </div>
           {children}
         </div>
       </div>
 
-      {/* Footer */}
-      <p className="mt-8 text-center text-xs text-slate-400">
-        &copy; {new Date().getFullYear()} WFH Attendance & Employee Monitoring Portal
+      <p className="mt-6 text-center text-xs text-slate-400">
+        &copy; {new Date().getFullYear()} WFH Attendance & Monitoring
       </p>
 
-      {/* Toast notifications */}
       <ToastContainer />
     </div>
   );
