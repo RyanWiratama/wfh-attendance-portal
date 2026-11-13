@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
-import { Eye, Calendar } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { DashboardTemplate } from '../components/templates/DashboardTemplate';
 import { DataTable, type Column } from '../components/organisms/DataTable';
 import { ImageLightbox } from '../components/organisms/ImageLightbox';
-import { AttendanceStatusBadge } from '../components/molecules/AttendanceStatusBadge';
 import { LateBadge } from '../components/molecules/LateBadge';
 import { useMyAttendanceHistory } from '../hooks/useAttendance';
 import type { AttendanceRecord } from '../types/attendance.types';
@@ -17,7 +16,6 @@ export const AttendanceHistoryPage: React.FC = () => {
 
   const { data, isLoading } = useMyAttendanceHistory({ page, limit: pageSize });
 
-  // Lightbox
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [lightboxTitle, setLightboxTitle] = useState<string>('');
   const [lightboxTime, setLightboxTime] = useState<string>('');
@@ -27,91 +25,102 @@ export const AttendanceHistoryPage: React.FC = () => {
       key: 'workDate',
       header: 'Tanggal',
       render: (row) => (
-        <div className="flex items-center gap-2 font-medium text-slate-800">
-          <Calendar className="w-4 h-4 text-slate-400" />
-          <span>{dayjs(row.workDate).format('DD MMM YYYY')}</span>
-        </div>
+        <span className="font-medium text-slate-800">
+          {dayjs(row.workDate).format('DD MMM YYYY')}
+        </span>
       ),
     },
     {
       key: 'checkInTime',
       header: 'Check-In',
       render: (row) => (
-        <div className="space-y-1">
-          <span className="font-mono text-xs font-semibold text-slate-700 block">
-            {row.checkInTime ? dayjs(row.checkInTime).format('HH:mm:ss') + ' WIB' : '-'}
-          </span>
-          {row.checkInPhotoPath && (
-            <button
-              type="button"
-              onClick={() => {
-                setLightboxUrl(`/api/attendances/photos/${row.checkInPhotoPath}`);
-                setLightboxTitle('Bukti Foto Check-In');
-                setLightboxTime(dayjs(row.checkInTime).format('DD MMM YYYY HH:mm:ss'));
-              }}
-              className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-800 font-medium"
-            >
-              <Eye className="w-3 h-3" />
-              <span>Lihat Foto</span>
-            </button>
-          )}
-        </div>
+        <span className="font-mono text-xs text-slate-700">
+          {row.checkInTime ? dayjs(row.checkInTime).format('HH:mm:ss') + ' WIB' : '-'}
+        </span>
       ),
     },
     {
       key: 'checkOutTime',
       header: 'Check-Out',
       render: (row) => (
-        <div className="space-y-1">
-          <span className="font-mono text-xs font-semibold text-slate-700 block">
-            {row.checkOutTime ? dayjs(row.checkOutTime).format('HH:mm:ss') + ' WIB' : '-'}
+        <span className="font-mono text-xs text-slate-700">
+          {row.checkOutTime ? dayjs(row.checkOutTime).format('HH:mm:ss') + ' WIB' : '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (row) => {
+        if (!row.checkInTime) {
+          return <span className="text-xs text-slate-400">-</span>;
+        }
+        if (row.isLate) {
+          return <LateBadge isLate={true} lateMinutes={row.lateMinutes} />;
+        }
+        return (
+          <span className="px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Tepat Waktu
           </span>
+        );
+      },
+    },
+    {
+      key: 'photos',
+      header: 'Foto Bukti',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          {row.checkInPhotoPath && (
+            <button
+              type="button"
+              onClick={() => {
+                setLightboxUrl(`/api/attendances/photos/${row.checkInPhotoPath}`);
+                setLightboxTitle('Foto Check-In');
+                setLightboxTime(dayjs(row.checkInTime).format('DD MMM YYYY HH:mm'));
+              }}
+              className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Masuk</span>
+            </button>
+          )}
           {row.checkOutPhotoPath && (
             <button
               type="button"
               onClick={() => {
                 setLightboxUrl(`/api/attendances/photos/${row.checkOutPhotoPath}`);
-                setLightboxTitle('Bukti Foto Check-Out');
-                setLightboxTime(dayjs(row.checkOutTime).format('DD MMM YYYY HH:mm:ss'));
+                setLightboxTitle('Foto Check-Out');
+                setLightboxTime(dayjs(row.checkOutTime).format('DD MMM YYYY HH:mm'));
               }}
-              className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-800 font-medium"
+              className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
             >
-              <Eye className="w-3 h-3" />
-              <span>Lihat Foto</span>
+              <Eye className="w-3.5 h-3.5" />
+              <span>Pulang</span>
             </button>
           )}
+          {!row.checkInPhotoPath && !row.checkOutPhotoPath && (
+            <span className="text-xs text-slate-400">-</span>
+          )}
         </div>
-      ),
-    },
-    {
-      key: 'status',
-      header: 'Status Kehadiran',
-      render: (row) => <AttendanceStatusBadge status={row.status} />,
-    },
-    {
-      key: 'isLate',
-      header: 'Keterlambatan',
-      render: (row) => (
-        <LateBadge isLate={row.isLate} lateMinutes={row.lateMinutes} />
       ),
     },
     {
       key: 'notes',
       header: 'Catatan',
       render: (row) => (
-        <div className="text-xs text-slate-500 max-w-xs truncate">
+        <span className="text-xs text-slate-500 max-w-xs truncate block">
           {row.checkInNotes || row.checkOutNotes || '-'}
-        </div>
+        </span>
       ),
     },
   ];
 
   return (
     <DashboardTemplate
-      title="Riwayat Presensi Saya"
-      description="Daftar catatan kehadiran WFH harian Anda beserta bukti foto dan status keterlambatan."
+      title="Riwayat Presensi"
+      description="Catatan kehadiran harian Anda beserta waktu, status, dan bukti foto."
     >
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5">
         <DataTable
           columns={columns}
           data={data?.items || []}

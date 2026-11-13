@@ -24,24 +24,24 @@ export const LiveClock: React.FC<LiveClockProps> = ({ variant = 'card' }) => {
 
   if (variant === 'compact') {
     return (
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-mono border border-slate-200">
-        <Clock className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-        <span className="font-semibold">{timeStr || '--:--:--'} WIB</span>
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-mono">
+        <Clock className="w-3.5 h-3.5 text-blue-600" />
+        <span className="font-medium">{timeStr || '--:--:--'} WIB</span>
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-blue-900 to-slate-900 text-white p-5 rounded-2xl shadow-md border border-blue-800">
-      <div className="flex items-center gap-2 text-blue-300 text-xs font-semibold uppercase tracking-wider mb-2">
-        <Clock className="w-4 h-4 animate-pulse" />
-        <span>Waktu Indonesia Barat (WIB)</span>
+    <div className="bg-white border border-slate-200 p-4 rounded-xl">
+      <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium mb-1">
+        <Clock className="w-4 h-4 text-blue-600" />
+        <span>Waktu Server (WIB)</span>
       </div>
-      <div className="text-3xl font-extrabold font-mono tracking-tight text-white mb-1">
-        {timeStr || '--:--:--'}
+      <div className="text-2xl font-bold font-mono text-slate-900">
+        {timeStr || '--:--:--'} WIB
       </div>
-      <div className="text-xs text-blue-200 font-medium">
-        {dateStr || 'Memuat tanggal...'}
+      <div className="text-xs text-slate-500 mt-0.5">
+        {dateStr}
       </div>
     </div>
   );
