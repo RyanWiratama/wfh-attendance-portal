@@ -77,6 +77,7 @@ export class AttendanceServiceController {
       startDate?: string;
       endDate?: string;
       status?: AttendanceStatus;
+      employeeIds?: number[];
     },
   ) {
     return this.attendanceService.getMonitoring(query);

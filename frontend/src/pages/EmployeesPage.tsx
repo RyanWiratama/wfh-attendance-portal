@@ -7,6 +7,8 @@ import {
   Pencil,
   Trash2,
   Search,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { DashboardTemplate } from '../components/templates/DashboardTemplate';
 import { DataTable, type Column } from '../components/organisms/DataTable';
@@ -55,6 +57,8 @@ export const EmployeesPage: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [showAddPassword, setShowAddPassword] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
 
   const formatTimeForDb = (t?: string, defaultVal = '08:00:00') => {
     if (!t) return defaultVal;
@@ -330,11 +334,22 @@ export const EmployeesPage: React.FC = () => {
             error={errors.password?.message}
             hint="Kosongkan jika ingin menggunakan password default: WFH#2026"
           >
-            <Input
-              type="password"
-              placeholder="Minimal 6 karakter"
-              {...register('password')}
-            />
+            <div className="relative">
+              <Input
+                type={showAddPassword ? 'text' : 'password'}
+                placeholder="Minimal 6 karakter"
+                {...register('password')}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowAddPassword((prev) => !prev)}
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none p-0.5"
+                aria-label={showAddPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+              >
+                {showAddPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </FormField>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -416,11 +431,22 @@ export const EmployeesPage: React.FC = () => {
             error={errors.password?.message}
             hint="Biarkan kosong jika tidak ingin mengubah password karyawan"
           >
-            <Input
-              type="password"
-              placeholder="Masukkan password baru jika ingin diganti"
-              {...register('password')}
-            />
+            <div className="relative">
+              <Input
+                type={showEditPassword ? 'text' : 'password'}
+                placeholder="Masukkan password baru jika ingin diganti"
+                {...register('password')}
+                className="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowEditPassword((prev) => !prev)}
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none p-0.5"
+                aria-label={showEditPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+              >
+                {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </FormField>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

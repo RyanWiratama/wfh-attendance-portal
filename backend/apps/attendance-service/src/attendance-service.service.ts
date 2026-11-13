@@ -235,12 +235,29 @@ export class AttendanceService implements OnModuleInit {
     startDate?: string;
     endDate?: string;
     status?: AttendanceStatus;
+    employeeIds?: number[];
   }): Promise<PaginatedResultDto<Attendance>> {
     const page = Math.max(1, query.page || 1);
     const pageSize = Math.max(1, Math.min(100, query.limit || 10));
     const skip = (page - 1) * pageSize;
 
+    if (query.employeeIds !== undefined && query.employeeIds.length === 0) {
+      return {
+        items: [],
+        total: 0,
+        page,
+        pageSize,
+        totalPages: 1,
+      };
+    }
+
     const qb = this.attendanceRepo.createQueryBuilder('att');
+
+    if (query.employeeIds && query.employeeIds.length > 0) {
+      qb.andWhere('att.employeeId IN (:...employeeIds)', {
+        employeeIds: query.employeeIds,
+      });
+    }
 
     if (query.startDate && query.endDate) {
       qb.andWhere('att.workDate BETWEEN :start AND :end', {

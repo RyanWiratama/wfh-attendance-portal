@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import {
   Search,
@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   Eye,
   Filter,
+  X,
 } from 'lucide-react';
 import { DashboardTemplate } from '../components/templates/DashboardTemplate';
 import { DataTable, type Column } from '../components/organisms/DataTable';
@@ -32,6 +33,15 @@ export const AttendanceMonitoringPage: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+
+  // Debounced search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   const { data, isLoading } = useAttendanceMonitoring({
     page,
@@ -171,13 +181,13 @@ export const AttendanceMonitoringPage: React.FC = () => {
             title="Tepat Waktu (Halaman Ini)"
             value={onTimeCount}
             icon={<CheckCircle2 className="w-5 h-5 text-emerald-600" />}
-            description="Check-in sebelum batas 08:15 WIB"
+            description="Sesuai jadwal kerja karyawan"
           />
           <StatCard
             title="Terlambat (Halaman Ini)"
             value={lateCount}
             icon={<AlertTriangle className="w-5 h-5 text-rose-600" />}
-            description="Check-in melewati jam 08:15 WIB"
+            description="Melewati batas toleransi masuk"
           />
         </div>
 
@@ -234,8 +244,22 @@ export const AttendanceMonitoringPage: React.FC = () => {
                       setPage(1);
                     }
                   }}
-                  className="pl-9"
+                  className="pl-9 pr-8"
                 />
+                {searchInput && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchInput('');
+                      setSearch('');
+                      setPage(1);
+                    }}
+                    className="absolute right-2.5 top-2.5 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100"
+                    aria-label="Bersihkan pencarian"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 

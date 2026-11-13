@@ -198,6 +198,32 @@ export class AttendancesController {
     @Query('search') search?: string,
     @Query('status') status?: AttendanceStatus,
   ) {
+    let employeeIds: number[] | undefined;
+
+    if (search && search.trim()) {
+      try {
+        const matchingEmployees = await firstValueFrom(
+          this.employeeClient.send('employee.find_all', {
+            search: search.trim(),
+            limit: 100,
+          }),
+        );
+        const ids = (matchingEmployees?.items || []).map((e: any) => e.id);
+        if (ids.length === 0) {
+          return {
+            items: [],
+            total: 0,
+            page: page ? Number(page) : 1,
+            pageSize: limit ? Number(limit) : 10,
+            totalPages: 1,
+          };
+        }
+        employeeIds = ids;
+      } catch {
+        // fallback
+      }
+    }
+
     const result = await firstValueFrom(
       this.attendanceClient.send('attendance.monitoring', {
         page: page ? Number(page) : 1,
@@ -205,6 +231,7 @@ export class AttendancesController {
         startDate,
         endDate,
         status,
+        employeeIds,
       }),
     );
 

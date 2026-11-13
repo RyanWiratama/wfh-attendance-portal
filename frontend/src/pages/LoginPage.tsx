@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, Lock, LogIn, KeyRound } from 'lucide-react';
+import { Mail, Lock, LogIn, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { AuthTemplate } from '../components/templates/AuthTemplate';
@@ -23,6 +23,7 @@ export const LoginPage: React.FC = () => {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -78,13 +79,21 @@ export const LoginPage: React.FC = () => {
         <FormField label="Kata Sandi" error={errors.password?.message} required>
           <div className="relative">
             <Input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               {...register('password')}
-              className="pl-10"
+              className="pl-10 pr-10"
               disabled={isLoading}
             />
             <Lock className="w-5 h-5 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none p-0.5"
+              aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
           </div>
         </FormField>
 
