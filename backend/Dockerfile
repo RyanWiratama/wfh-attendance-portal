@@ -10,11 +10,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npx nest build common && \
-    npx nest build employee-service && \
-    npx nest build auth-service && \
-    npx nest build attendance-service && \
-    npx nest build backend
+RUN npm run build
 
 # Stage 2: Production Runner
 FROM node:20-alpine AS runner
